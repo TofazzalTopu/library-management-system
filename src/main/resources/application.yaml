@@ -6,6 +6,8 @@ server:
 spring:
   application:
     name: COLLABERA_LIBRARY_MANAGEMENT_SYSTEM
+  profiles:
+    active: dev
 
   datasource:
     url: jdbc:h2:mem:mydb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
@@ -45,3 +47,21 @@ spring:
       path: /v3/api-docs
     swagger-ui:
       path: /swagger-ui.html
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,beans, metrics,env,loggers,threaddump,heapdump
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: Library Management System
+    version: 1.0.0
+    description: Spring Boot Library API

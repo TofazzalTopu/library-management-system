@@ -1,5 +1,6 @@
 package com.library.management.controller;
 
+import com.library.management.annotation.APIDocumentation;
 import com.library.management.dto.request.BorrowerRequest;
 import com.library.management.dto.response.BorrowerResponse;
 import com.library.management.service.BorrowerService;
@@ -10,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 @Slf4j
@@ -24,8 +23,9 @@ public class BorrowerController {
   private final BorrowerService borrowerService;
 
   @PostMapping
+  @APIDocumentation
   public ResponseEntity<BorrowerResponse> registerBorrower(
-      @Valid @RequestBody BorrowerRequest borrowerRequest) throws URISyntaxException {
+      @Valid @RequestBody BorrowerRequest borrowerRequest) {
 
     log.info("Received request to register a new borrower: {}", borrowerRequest);
 
@@ -35,6 +35,7 @@ public class BorrowerController {
   }
 
   @GetMapping
+  @APIDocumentation
   public ResponseEntity<List<BorrowerResponse>> bookList() {
     log.info("Received request to list all borrowers");
     return ResponseEntity.ok(borrowerService.getAllBorrowers());

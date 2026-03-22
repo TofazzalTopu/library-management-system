@@ -11,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 
 @Slf4j
@@ -26,7 +24,7 @@ public class BookController {
 
   @PostMapping
   @APIDocumentation
-  public ResponseEntity<BookResponse> registerBook(@Valid @RequestBody BookRequest bookRequest) throws URISyntaxException {
+  public ResponseEntity<BookResponse> registerBook(@Valid @RequestBody BookRequest bookRequest) {
     log.info("Received request to register a new book: {}", bookRequest);
     BookResponse bookResponse = bookService.registerBook(bookRequest);
 
