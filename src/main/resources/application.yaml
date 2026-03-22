@@ -1,40 +1,47 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
 spring:
   application:
     name: COLLABERA_LIBRARY_MANAGEMENT_SYSTEM
 
   datasource:
-    url: jdbc:h2:mem:mydb
+    url: jdbc:h2:mem:mydb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     username: sa
     password: password
-    driverClassName: org.h2.Driver
+    driver-class-name: org.h2.Driver
+    hikari:
+      pool-name: HikariLibraryPool
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      leak-detection-threshold: 2000
+      auto-commit: true
+      read-only: false
 
   h2:
     console:
       enabled: true
 
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
-    baseline-on-migrate: true
-
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    defer-datasource-initialization: true
     hibernate:
       ddl-auto: none
+    database-platform: org.hibernate.dialect.H2Dialect
     show-sql: true
-  mvc:
-    servlet:
-      path: /
+    defer-datasource-initialization: true
 
-server:
-  port: 8080
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    connect-retries: 3
 
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    enabled: true
-    path: /swagger-ui.html
-  paths-to-match:
-    - /v1/libraries/**
+  springdoc:
+    api-docs:
+      path: /v3/api-docs
+    swagger-ui:
+      path: /swagger-ui.html

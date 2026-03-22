@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -14,6 +15,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 @Slf4j
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/libraries/v1/borrowers")
@@ -29,7 +31,7 @@ public class BorrowerController {
 
     BorrowerResponse borrowerResponse = borrowerService.registerBorrower(borrowerRequest);
 
-    return ResponseEntity.created(new URI("/")).body(borrowerResponse);
+    return ResponseEntity.ok(borrowerResponse);
   }
 
   @GetMapping

@@ -32,7 +32,7 @@ public class BookController {
 
     log.debug("Book registered successfully. BookResponse: {}", bookResponse);
 
-    return ResponseEntity.created(new URI("/")).body(bookResponse);
+    return ResponseEntity.ok(bookResponse);
   }
 
   @GetMapping
