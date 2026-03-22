@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: library-management-system
+  labels:
+    app: library-management-system
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: library-management-system
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: library-management-system
+    spec:
+      containers:
+        - name: library-management-system
+          image: tofazzal/library-management-system:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          volumeMounts:
+            - name: library-storage
+              mountPath: /data
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "prod"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      volumes:
+        - name: library-storage
+          persistentVolumeClaim:
+            claimName: library-management-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: library-management-system-svc
+spec:
+  selector:
+    app: library-management-system
+  ports:
+    - name: http
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
