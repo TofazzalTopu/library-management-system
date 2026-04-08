@@ -1,5 +1,6 @@
 package com.library.management.service.impl;
 
+import com.library.management.constants.Constants;
 import com.library.management.dto.response.BorrowRecordResponse;
 import com.library.management.dto.response.BorrowResponse;
 import com.library.management.exceptions.BorrowBookFailedException;
@@ -62,8 +63,8 @@ public class BorrowServiceImpl implements BorrowService {
     // verify if book already borrowed
     private void verifyIfTheBookIsAlreadyBorrowed(Long bookId) {
         if (borrowRecordRepository.existsByBookIdAndActiveTrue(bookId)) {
-            log.warn("Borrow failed: Book {} is already borrowed", bookId);
-            throw new BorrowBookFailedException("Book is already borrowed");
+            log.warn(Constants.BORROW_FAILED_BOOK_IS_ALREADY_BORROWED, bookId);
+            throw new BorrowBookFailedException(Constants.BOOK_IS_ALREADY_BORROWED);
         }
     }
 
@@ -73,7 +74,7 @@ public class BorrowServiceImpl implements BorrowService {
 
         BorrowRecord borrowRecord = findById(borrowRecordId);
         if (!borrowRecord.isActive()) {
-            throw new BorrowStateException("Book already returned");
+            throw new BorrowStateException(Constants.BOOK_ALREADY_RETURNED);
         }
 
         BorrowRecord returnBorrowRecord = createReturn(borrowRecord);
@@ -107,7 +108,7 @@ public class BorrowServiceImpl implements BorrowService {
         return borrowRecord;
     }
 
-    public static BorrowRecord createReturn(BorrowRecord returnRecord) {
+    private static BorrowRecord createReturn(BorrowRecord returnRecord) {
 
         log.info("Returning borrow record: borrowRecordId={}, bookId={}, borrowerId={}", returnRecord.getRecordId(), returnRecord.getBook().getId(), returnRecord.getBorrower().getId());
 

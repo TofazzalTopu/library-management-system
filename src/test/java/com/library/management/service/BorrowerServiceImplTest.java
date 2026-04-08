@@ -9,9 +9,14 @@ import com.library.management.service.impl.BorrowerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -60,7 +65,8 @@ class BorrowerServiceImplTest {
     }
 
     @Test
-    void getAllBorrowers_shouldReturnListOfBorrowerResponses() {
+    void getAllBorrowers_shouldReturnPagedBorrowerResponses_andVerifyPageable() {
+
         Borrower borrower1 = new Borrower();
         borrower1.setId(1L);
         borrower1.setName("Alice");
@@ -71,15 +77,33 @@ class BorrowerServiceImplTest {
         borrower2.setName("Bob");
         borrower2.setEmail("bob@example.com");
 
-        when(borrowerRepository.findAll()).thenReturn(List.of(borrower1, borrower2));
+        Pageable pageable = PageRequest.of(0, 10);
 
-        List<BorrowerResponse> responses = borrowerService.getAllBorrowers();
+        Page<Borrower> borrowerPage =
+                new PageImpl<>(List.of(borrower1, borrower2), pageable, 2);
 
-        assertThat(responses).hasSize(2);
-        assertThat(responses.get(0).getName()).isEqualTo("Alice");
-        assertThat(responses.get(1).getName()).isEqualTo("Bob");
+        when(borrowerRepository.findAll(any(Pageable.class)))
+                .thenReturn(borrowerPage);
 
-        verify(borrowerRepository, times(1)).findAll();
+        Page<BorrowerResponse> result = borrowerService.getAllBorrowers(pageable);
+
+        // Assert - content
+        assertThat(result.getContent()).hasSize(2);
+        assertThat(result.getContent().get(0).getName()).isEqualTo("Alice");
+        assertThat(result.getContent().get(1).getName()).isEqualTo("Bob");
+
+        // Assert - metadata
+        assertThat(result.getTotalElements()).isEqualTo(2);
+        assertThat(result.getNumber()).isZero();
+        assertThat(result.getSize()).isEqualTo(10);
+
+        // Verify Pageable passed correctly
+        ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+        verify(borrowerRepository, times(1)).findAll(captor.capture());
+
+        Pageable captured = captor.getValue();
+        assertThat(captured.getPageNumber()).isZero();
+        assertThat(captured.getPageSize()).isEqualTo(10);
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.library.management.controller;
 
 import com.library.management.annotation.APIDocumentation;
+import com.library.management.constants.Constants;
 import com.library.management.dto.request.BorrowRequest;
 import com.library.management.dto.response.BorrowRecordResponse;
 import com.library.management.dto.response.BorrowResponse;
@@ -18,7 +19,7 @@ import java.util.List;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/libraries/v1/borrows")
+@RequestMapping(Constants.BORROW_API_ENDPOINT)
 public class BorrowController {
 
   private final BorrowService borrowService;

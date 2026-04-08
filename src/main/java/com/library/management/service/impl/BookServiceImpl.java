@@ -1,5 +1,6 @@
 package com.library.management.service.impl;
 
+import com.library.management.constants.Constants;
 import com.library.management.dto.request.BookRequest;
 import com.library.management.dto.response.BookResponse;
 import com.library.management.exceptions.BookRegistrationFailureException;
@@ -9,9 +10,14 @@ import com.library.management.repository.BookRepository;
 import com.library.management.service.BookService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -22,6 +28,14 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
 
     @Override
+    @Caching(
+            put = {
+                    @CachePut(value = Constants.CACHE_NAME_BOOK, key = "#result.id")
+            },
+            evict = {
+                    @CacheEvict(value = Constants.CACHE_NAME_BOOK, key = "'ALL'")
+            }
+    )
     public BookResponse registerBook(BookRequest bookRequest) {
         log.info("Register book with ISBN={}", bookRequest.getIsbn());
 
@@ -35,20 +49,25 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookResponse> getAllBooks() {
-        log.info("Fetching all books from repository");
+    @Cacheable(
+            value = Constants.CACHE_NAME_BOOK,
+            key = "'page:' + #pageable.pageNumber + ':size:' + #pageable.pageSize"
+    )
+    public Page<BookResponse> getAllBooks(Pageable pageable) {
 
-        List<Book> books = bookRepository.findAll();
-        log.debug("Fetched {} books", books.size());
-        return books.stream().map(BookResponse::of).toList();
+        log.info("Fetching books page={} size={}", pageable.getPageNumber(), pageable.getPageSize());
+
+        Page<Book> bookPage = bookRepository.findAll(pageable);
+
+        return bookPage.map(BookResponse::of);
     }
-
     @Override
+    @Cacheable(value = Constants.CACHE_NAME_BOOK, key = "#id")
     public Book findById(Long id) {
         return bookRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("Book {} not found", id);
-                    return new BorrowBookFailedException("Book not found");
+                    return new BorrowBookFailedException(Constants.BOOK_NOT_FOUND);
                 });
     }
 

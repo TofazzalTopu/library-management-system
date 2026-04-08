@@ -1,23 +1,24 @@
 package com.library.management.controller;
 
 import com.library.management.annotation.APIDocumentation;
+import com.library.management.constants.Constants;
 import com.library.management.dto.request.BorrowerRequest;
 import com.library.management.dto.response.BorrowerResponse;
 import com.library.management.service.BorrowerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/libraries/v1/borrowers")
+@RequestMapping(Constants.BORROWER_API_ENDPOINT)
 public class BorrowerController {
 
   private final BorrowerService borrowerService;
@@ -36,9 +37,12 @@ public class BorrowerController {
 
   @GetMapping
   @APIDocumentation
-  public ResponseEntity<List<BorrowerResponse>> bookList() {
-    log.info("Received request to list all borrowers");
-    return ResponseEntity.ok(borrowerService.getAllBorrowers());
+  public ResponseEntity<Page<BorrowerResponse>> bookList(Pageable pageable) {
+
+    log.info("Received request to list borrowers page={} size={}",
+            pageable.getPageNumber(), pageable.getPageSize());
+
+    return ResponseEntity.ok(borrowerService.getAllBorrowers(pageable));
   }
 
 }

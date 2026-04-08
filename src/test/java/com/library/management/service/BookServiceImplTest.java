@@ -10,9 +10,11 @@ import com.library.management.repository.BookRepository;
 import com.library.management.service.impl.BookServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -81,7 +83,7 @@ class BookServiceImplTest {
     }
 
     @Test
-    void getAllBooks_shouldReturnListOfBookResponses() {
+    void getAllBooks_shouldReturnPagedBookResponses_andVerifyPageable() {
         Book book1 = new Book();
         book1.setId(1L);
         book1.setIsbn("111");
@@ -94,15 +96,32 @@ class BookServiceImplTest {
         book2.setTitle("Spring Boot");
         book2.setAuthor("Author2");
 
-        when(bookRepository.findAll()).thenReturn(List.of(book1, book2));
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
 
-        List<BookResponse> books = bookService.getAllBooks();
+        Page<Book> bookPage = new PageImpl<>(List.of(book1, book2), pageable, 2);
 
-        assertThat(books).hasSize(2);
-        assertThat(books.get(0).getTitle()).isEqualTo("Java");
-        assertThat(books.get(1).getTitle()).isEqualTo("Spring Boot");
+        when(bookRepository.findAll(any(Pageable.class))).thenReturn(bookPage);
 
-        verify(bookRepository, times(1)).findAll();
+        Page<BookResponse> result = bookService.getAllBooks(pageable);
+
+        assertThat(result.getContent()).hasSize(2);
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo("Java");
+        assertThat(result.getContent().get(1).getTitle()).isEqualTo("Spring Boot");
+
+        // Assert - pagination metadata
+        assertThat(result.getTotalElements()).isEqualTo(2);
+        assertThat(result.getNumber()).isZero();
+        assertThat(result.getSize()).isEqualTo(10);
+
+        // Capture and verify Pageable
+        ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+        verify(bookRepository, times(1)).findAll(pageableCaptor.capture());
+
+        Pageable captured = pageableCaptor.getValue();
+
+        assertThat(captured.getPageNumber()).isZero();
+        assertThat(captured.getPageSize()).isEqualTo(10);
+        assertThat(captured.getSort()).isEqualTo(Sort.by("id").descending());
     }
 
     @Test
