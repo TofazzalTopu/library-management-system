@@ -4,9 +4,13 @@ import com.library.management.model.BorrowRecord;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
 @Builder
-public class BorrowResponse {
+public class BorrowResponse implements Serializable {
+
+  private static final long serialVersionUID = 1L;
 
   private Long recordId;
   private Long borrowerId;

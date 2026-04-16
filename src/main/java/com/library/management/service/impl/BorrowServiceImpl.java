@@ -13,10 +13,10 @@ import com.library.management.repository.BorrowRecordRepository;
 import com.library.management.service.BookService;
 import com.library.management.service.BorrowService;
 import com.library.management.service.BorrowerService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,6 +31,7 @@ public class BorrowServiceImpl implements BorrowService {
     private final BorrowRecordRepository borrowRecordRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public BorrowRecord findById(Long id) {
         return borrowRecordRepository.findById(id).orElseThrow(() -> {
             log.error("Return failed: Borrow record {} not found", id);
@@ -55,9 +56,11 @@ public class BorrowServiceImpl implements BorrowService {
 
         BorrowRecord savedRecord = borrowRecordRepository.save(borrowRecord);
 
-        log.info("Borrow successful: borrowRecordId={}, borrowerId={}, bookId={}", savedRecord.getRecordId(), borrowerId, bookId);
+        BorrowResponse response = BorrowResponse.of(savedRecord);
 
-        return BorrowResponse.of(savedRecord);
+        log.info("Borrow successful: borrowRecordId={}, borrowerId={}, bookId={}", response.getRecordId(), borrowerId, bookId);
+
+        return response;
     }
 
     // verify if book already borrowed
@@ -83,6 +86,7 @@ public class BorrowServiceImpl implements BorrowService {
         return BorrowResponse.of(savedRecord);
     }
 
+    @Transactional(readOnly = true)
     public List<BorrowRecordResponse> getCurrentBorrowRecords() {
         log.info("Fetching all currently active borrow records");
 

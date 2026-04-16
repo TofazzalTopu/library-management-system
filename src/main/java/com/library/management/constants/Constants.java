@@ -16,6 +16,7 @@ public class Constants {
     public static final String BORROW_API_ENDPOINT = API_ENDPOINT + "/borrows";
     public static final String BOOK_NOT_FOUND = "Book not found";
     public static final String BORROWER_NOT_FOUND = "Borrower not found";
+    public static final String BORROWER_EMAIL_ALREADY_EXISTS = "Borrower Email already exists";
     public static final String BOOK_ALREADY_RETURNED = "Selected book already returned";
     public static final String BOOK_IS_ALREADY_BORROWED = "Selected book is already borrowed";
     public static final String BORROW_FAILED_BOOK_IS_ALREADY_BORROWED = "Borrow failed: Book {} is already borrowed";

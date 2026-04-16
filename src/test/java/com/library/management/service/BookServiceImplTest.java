@@ -54,7 +54,7 @@ class BookServiceImplTest {
         BookResponse response = bookService.registerBook(request);
 
         assertThat(response).isNotNull();
-        assertThat(response.getBookId()).isEqualTo(1L);
+        assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getTitle()).isEqualTo("Java Programming");
 
         verify(bookRepository, times(1)).save(any(Book.class));

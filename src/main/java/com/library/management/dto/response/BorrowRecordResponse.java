@@ -4,12 +4,15 @@ import com.library.management.model.BorrowRecord;
 import lombok.Builder;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class BorrowRecordResponse {
-  private Long borrowId;
+public class BorrowRecordResponse implements Serializable {
+
+  private static final long serialVersionUID = 1L;
+  private Long id;
   private Long bookId;
   private String bookTitle;
   private String isbn;
@@ -19,7 +22,7 @@ public class BorrowRecordResponse {
 
   public static BorrowRecordResponse of(BorrowRecord borrowRecord) {
     return BorrowRecordResponse.builder()
-        .borrowId(borrowRecord.getRecordId())
+        .id(borrowRecord.getRecordId())
         .bookId(borrowRecord.getBook().getId())
         .bookTitle(borrowRecord.getBook().getTitle())
         .isbn(borrowRecord.getBook().getIsbn())

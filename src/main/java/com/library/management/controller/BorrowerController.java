@@ -37,7 +37,7 @@ public class BorrowerController {
 
   @GetMapping
   @APIDocumentation
-  public ResponseEntity<Page<BorrowerResponse>> bookList(Pageable pageable) {
+  public ResponseEntity<Page<BorrowerResponse>> borrowerList(Pageable pageable) {
 
     log.info("Received request to list borrowers page={} size={}",
             pageable.getPageNumber(), pageable.getPageSize());

@@ -56,7 +56,7 @@ class BorrowControllerTest {
 
         // BorrowRecordResponse (correct fields only)
         borrowRecordResponse = BorrowRecordResponse.builder()
-                .borrowId(100L)
+                .id(100L)
                 .bookId(10L)
                 .bookTitle("Java Programming")
                 .isbn("12345")

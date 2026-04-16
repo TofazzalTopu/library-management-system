@@ -17,6 +17,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -36,6 +37,7 @@ public class BookServiceImpl implements BookService {
                     @CacheEvict(value = Constants.CACHE_NAME_BOOK, key = "'ALL'")
             }
     )
+    @Transactional
     public BookResponse registerBook(BookRequest bookRequest) {
         log.info("Register book with ISBN={}", bookRequest.getIsbn());
 
@@ -43,16 +45,17 @@ public class BookServiceImpl implements BookService {
 
         existingBookOpt.ifPresent(book -> validateBookISBNConsistency(book, bookRequest));
         Book savedBook = bookRepository.save(bookRequest.toEntity());
-        log.info("Book successfully registered with ID={} and ISBN={}", savedBook.getId(), savedBook.getIsbn());
 
         return BookResponse.of(savedBook);
     }
 
     @Override
     @Cacheable(
-            value = Constants.CACHE_NAME_BOOK,
-            key = "'page:' + #pageable.pageNumber + ':size:' + #pageable.pageSize"
+            value = Constants.CACHE_NAME_BORROWER,
+            key = "'PAGE_0'",
+            condition = "#pageable.pageNumber == 0"
     )
+    @Transactional(readOnly = true)
     public Page<BookResponse> getAllBooks(Pageable pageable) {
 
         log.info("Fetching books page={} size={}", pageable.getPageNumber(), pageable.getPageSize());
@@ -61,8 +64,9 @@ public class BookServiceImpl implements BookService {
 
         return bookPage.map(BookResponse::of);
     }
+
     @Override
-    @Cacheable(value = Constants.CACHE_NAME_BOOK, key = "#id")
+    @Transactional(readOnly = true)
     public Book findById(Long id) {
         return bookRepository.findById(id)
                 .orElseThrow(() -> {
@@ -71,6 +75,11 @@ public class BookServiceImpl implements BookService {
                 });
     }
 
+    @Cacheable(value = Constants.CACHE_NAME_BOOK, key = "#id")
+    public BookResponse getBookById(Long id) {
+        Book book = findById(id);
+        return BookResponse.of(book);
+    }
 
     /*
      * Validate same isbn existence

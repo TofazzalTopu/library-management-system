@@ -48,7 +48,7 @@ class BorrowerControllerTest {
                 .build();
 
         borrowerResponse = BorrowerResponse.builder()
-                .borrowerId(1L)
+                .id(1L)
                 .name("Alice Johnson")
                 .email("alice@example.com")
                 .build();

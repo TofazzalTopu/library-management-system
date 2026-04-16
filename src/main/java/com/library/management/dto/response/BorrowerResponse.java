@@ -1,24 +1,26 @@
 package com.library.management.dto.response;
 
 import com.library.management.model.Borrower;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.io.Serializable;
 
 @Data
 @Builder
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class BorrowerResponse {
+public class BorrowerResponse implements Serializable {
 
-  private Long borrowerId;
+  private static final long serialVersionUID = 1L;
+
+  private Long id;
   private String name;
   private String email;
 
   public static BorrowerResponse of(Borrower borrower) {
     return BorrowerResponse.builder()
-        .borrowerId(borrower.getId())
+        .id(borrower.getId())
         .name(borrower.getName())
         .email(borrower.getEmail())
         .build();

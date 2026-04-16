@@ -24,12 +24,15 @@ public class Book {
   private Long id;
 
   @Column(name = "ISBN", nullable = false, length = 100)
+  @EqualsAndHashCode.Include
   private String isbn;
 
   @Column(name = "TITLE", nullable = false, length = 100)
+  @EqualsAndHashCode.Include
   private String title;
 
   @Column(name = "AUTHOR", nullable = false, length = 100)
+  @EqualsAndHashCode.Include
   private String author;
 
   @Version

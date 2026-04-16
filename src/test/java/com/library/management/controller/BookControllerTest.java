@@ -44,7 +44,7 @@ class BookControllerTest {
         bookRequest = BookRequest.builder().isbn("12345").title("Java Programming").author("John Doe").build();
 
         bookResponse = BookResponse.builder()
-                .bookId(1L)
+                .id(1L)
                 .isbn("12345")
                 .title("Java Programming")
                 .author("John Doe")

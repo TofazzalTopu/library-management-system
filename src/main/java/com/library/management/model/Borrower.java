@@ -25,9 +25,11 @@ public class Borrower {
   private Long id;
 
   @Column(name = "NAME", nullable = false, length = 100)
+  @EqualsAndHashCode.Include
   private String name;
 
   @Column(name = "EMAIL", unique = true, nullable = false, length = 50)
+  @EqualsAndHashCode.Include
   private String email;
 
   @Version

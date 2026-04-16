@@ -58,7 +58,7 @@ class BorrowerServiceImplTest {
         BorrowerResponse response = borrowerService.registerBorrower(borrowerRequest);
 
         assertThat(response).isNotNull();
-        assertThat(response.getBorrowerId()).isEqualTo(1L);
+        assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getName()).isEqualTo("Alice Johnson");
 
         verify(borrowerRepository, times(1)).save(any(Borrower.class));

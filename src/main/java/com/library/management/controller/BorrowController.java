@@ -43,7 +43,7 @@ public class BorrowController {
   }
 
   @APIDocumentation
-  @PostMapping("/{borrowRecordId}/return")
+  @GetMapping("/{borrowRecordId}/return")
   public ResponseEntity<BorrowResponse> returnBook(@PathVariable Long borrowRecordId) {
 
     log.info("Received return request for BorrowRecordId={}", borrowRecordId);
